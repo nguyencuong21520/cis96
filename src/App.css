@@ -1,5 +1,5 @@
 .container_{
-    width: 80vh;
+    width: 80vw;
     height: 90vh;
     position: absolute;
     transform: translate(-50%, -50%);
@@ -24,7 +24,7 @@
     justify-content: space-around;
 }
 .search_wrapper input{
-    width: 70%;
+    width: 80%;
     padding: 9px;
     border: none;
     background-color: transparent;
@@ -34,4 +34,12 @@
 
 input:focus {
     outline: none;
+}
+.listCheckbox{
+    display: flex;
+    flex-wrap: wrap;
+    
+}
+.listCheckbox p{
+    padding: 10px;
 }

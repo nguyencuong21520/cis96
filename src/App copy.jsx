@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import './App.css'
 import Card from './components/Card.jsx'
 import Modal from './components/Modal.jsx';
@@ -25,57 +25,45 @@ function App() {
     { id: "#0015", name: "Beedrill", types: ["Bug", "Poison"], image: "./015.png" },
   ];
 
-  const [showModal, setShowModal] = useState(false);
-  const [pokemonSelected, setPokemonSelected] = useState("");
-  const [pokeSearch, setPokeSearch] = useState("");
-  const [filterTypes, setFilterTypes] = useState({});
-  const [pokemons, setPokemons] = useState(initialPokemons);
+  // Tạo ra 1 list các hệ từ data pokemon ban đầu
+  const listClass = {};
+  initialPokemons.forEach((pokemon) => {
+    pokemon.types.forEach(type => {
+      listClass[type] = true;
+    });
+  });
 
-
-  const filterTypeValues = {}
-  initialPokemons.forEach(types => {
-    types.types.forEach(type => {
-      if (!filterTypeValues[type]) {
-        filterTypeValues[type] = true;
-      }
-    })
-  })
-
-  useEffect(() => {
-    setFilterTypes(filterTypeValues)
-  }, [])
-
-  const handleChangeFilter = (key) => {
-    setFilterTypes((prev) => {
-      const newFilter = {
-        ...prev,
-        [key]: !prev[key]
-      }
-      return newFilter
-    })
-  }
+  const [showModal, setShowModal] = useState(false)
+  const [pokemonSelected, setPokemonSelected] = useState("")
+  const [pokeSearch, setPokeSearch] = useState("")
+  const [pokemons, setPokemons] = useState(initialPokemons)
+  const [selectedTypes, setSelectedTypes] = useState(listClass);
 
   const handleShowModal = () => {
-    setShowModal(true);
-  };
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setPokemonSelected(null);
-  };
-  const handlePokemonSelected = (pokemonSelected) => {
-    setPokemonSelected(pokemonSelected);
-  };
-
-  const handleSearch = () => {
-    const filter = initialPokemons.filter((pokemon) => {
-      const checkSearch = pokemon.name.toLowerCase().includes(pokeSearch.toLowerCase())
-      const checkFilter = pokemon.types.some((type) => filterTypes[type])
-      return checkFilter && checkSearch
-    })
-    setPokemons(filter)
+    setShowModal(true)
   }
+  const handleCloseModal = () => {
+    setShowModal(false)
+    setPokemonSelected(null)
+  }
+  const handlePokemonSelected = (pokemonSelected) => {
+    setPokemonSelected(pokemonSelected)
+  }
+  const handleSearch = () => {
+    const filterPoke = initialPokemons.filter((pokemon) => {
+      const matchesSearch = pokemon.name.toLowerCase().includes(pokeSearch.toLowerCase());
+      const matchesType = pokemon.types.some(type => selectedTypes[type]);
+      return matchesSearch && matchesType;
+    })
 
-
+    setPokemons(filterPoke)
+  }
+  const handleTypeChange = (type) => {
+    setSelectedTypes(prev => ({
+      ...prev,
+      [type]: !prev[type]
+    }));
+  }
 
   return (
     <>
@@ -87,9 +75,9 @@ function App() {
               Lọc hệ:
             </p>
             <div className='listCheckbox'>
-              {Object.keys(filterTypes).map(key => {
+              {Object.keys(listClass).map(key => {
                 return <p className="item" key={key}>
-                  <input type="checkbox" id={key} checked={filterTypes[key]} onClick={() => { handleChangeFilter(key) }} />
+                  <input type="checkbox" id={key} checked={selectedTypes[key]} onChange={() => handleTypeChange(key)} />
                   <label htmlFor={key}>{key}</label>
                 </p>
               })
@@ -112,7 +100,7 @@ function App() {
       </div>
       {showModal && <Modal pokemonSelected={pokemonSelected} handleCloseModal={handleCloseModal} />}
     </>
-  );
+  )
 }
 
-export default App;
+export default App
